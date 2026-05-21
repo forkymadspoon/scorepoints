@@ -50,7 +50,7 @@ export function CelebrationModal({
         transition={{ delay: 0.3 }}
         className="space-y-3"
       >
-        <button onClick={onReset} className={`w-full py-4 text-white rounded-2xl font-black text-xl transition-colors shadow-lg opacity-90 hover:opacity-100 ${currentRewardConfig.bg.replace('100', '500')}`}>
+        <button onClick={onReset} className={`w-full py-4 text-white rounded-2xl font-black text-xl transition-colors shadow-lg opacity-90 hover:opacity-100 ${currentRewardConfig.buttonBg}`}>
           Cash In & Start Over
         </button>
         <button onClick={onClose} className="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl font-black text-xl transition-colors">

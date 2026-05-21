@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Plus, Check, X, Pencil, Trash2 } from "lucide-react";
+import { usePostHog } from "@posthog/react";
 import type { Action, ActionType } from "../types";
 
 export function ActionModal({
@@ -18,6 +19,7 @@ export function ActionModal({
   onClose: () => void;
   onUpdateActions: (actions: Action[]) => void;
 }) {
+  const posthog = usePostHog();
   const [isEditing, setIsEditing] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customValue, setCustomValue] = useState("");
@@ -31,6 +33,11 @@ export function ActionModal({
     e.preventDefault();
     if (customName && customValue) {
       if (isEditing) {
+        posthog?.capture("action_preset_added", {
+          action_name: customName,
+          action_value: parseInt(customValue, 10),
+          action_type: type,
+        });
         onUpdateActions([...actions, {
           id: Math.random().toString(36).substr(2, 9),
           name: customName,
@@ -48,6 +55,12 @@ export function ActionModal({
   };
 
   const handleDelete = (id: string) => {
+    const action = actions.find((a) => a.id === id);
+    posthog?.capture("action_preset_deleted", {
+      action_name: action?.name,
+      action_value: action?.value,
+      action_type: type,
+    });
     onUpdateActions(actions.filter(a => a.id !== id));
   };
 

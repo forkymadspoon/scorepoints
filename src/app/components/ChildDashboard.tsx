@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import confetti from "canvas-confetti";
 import { Star } from "lucide-react";
+import { usePostHog } from "@posthog/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { REWARD_TYPES, DEFAULT_GOOD_ACTIONS, DEFAULT_BAD_ACTIONS } from "../constants";
 import { FigmaHistoryIcon, FigmaSettingsIcon, FigmaChevronIcon, FigmaMinusIcon, FigmaPlusIcon } from "./icons";
@@ -25,6 +26,7 @@ export function ChildDashboard({
   setChildren: (c: ChildProfile[]) => void,
   setActiveChildId: (id: string) => void
 }) {
+  const posthog = usePostHog();
   const keyPrefix = child.id === 'default' ? 'app' : `app-${child.id}`;
 
   const [points, setPoints] = useLocalStorage<number>(`${keyPrefix}-points`, 0);
@@ -102,10 +104,38 @@ export function ChildDashboard({
 
     setTransactions((prev) => [transaction, ...prev]);
 
+    const newPoints = action.type === "good" ? points + action.value : points - action.value;
+
     if (action.type === "good") {
+      posthog?.capture("points_earned", {
+        action_name: action.name,
+        points_value: action.value,
+        child_id: child.id,
+        child_name: child.name,
+        is_preset: "id" in action,
+        total_points_after: newPoints,
+      });
       setPoints((prev) => prev + action.value);
     } else {
+      posthog?.capture("points_deducted", {
+        action_name: action.name,
+        points_value: action.value,
+        child_id: child.id,
+        child_name: child.name,
+        is_preset: "id" in action,
+        total_points_after: newPoints,
+      });
       setPoints((prev) => prev - action.value);
+    }
+
+    if (action.type === "good" && newPoints >= goal && points < goal) {
+      posthog?.capture("goal_reached", {
+        child_id: child.id,
+        child_name: child.name,
+        goal,
+        reward_text: rewardText,
+        reward_type: rewardType,
+      });
     }
 
     setActiveModal(null);
@@ -121,6 +151,14 @@ export function ChildDashboard({
       timestamp: Date.now(),
     };
     setTransactions((prev) => [tx, ...prev]);
+    posthog?.capture("reward_cashed_in", {
+      child_id: child.id,
+      child_name: child.name,
+      reward_text: rewardText,
+      reward_type: rewardType,
+      points_at_cash_in: points,
+      goal,
+    });
     setPoints(0);
     setActiveModal(null);
   };
@@ -128,6 +166,14 @@ export function ChildDashboard({
   const undoTransaction = (id: string) => {
     const tx = transactions.find((t) => t.id === id);
     if (!tx) return;
+
+    posthog?.capture("transaction_undone", {
+      child_id: child.id,
+      child_name: child.name,
+      action_name: tx.name,
+      points_value: tx.value,
+      transaction_type: tx.type,
+    });
 
     if (tx.type === "good") {
       setPoints((prev) => prev - tx.value);
@@ -148,10 +194,23 @@ export function ChildDashboard({
       timestamp: Date.now(),
     };
     setTransactions((prev) => [tx, ...prev]);
+    posthog?.capture("points_reset", {
+      child_id: child.id,
+      child_name: child.name,
+      points_at_reset: points,
+    });
     setPoints(0);
   };
 
   const handleSaveSettings = (newGoal: number, newReward: string, newType: RewardType) => {
+    posthog?.capture("goal_settings_saved", {
+      child_id: child.id,
+      child_name: child.name,
+      new_goal: newGoal,
+      new_reward_text: newReward,
+      new_reward_type: newType,
+      previous_goal: goal,
+    });
     if (newGoal > 0) setGoal(newGoal);
     if (newReward) setRewardText(newReward);
     setRewardType(newType);

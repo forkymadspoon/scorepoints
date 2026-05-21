@@ -3,12 +3,12 @@ import { FigmaTrophyIcon } from "./components/icons";
 import type { Action } from "./types";
 
 export const REWARD_TYPES = [
-  { id: "trophy", icon: FigmaTrophyIcon, label: "Prize", color: "text-[#F0B100]", bg: "bg-[#fef9c2]", hover: "hover:ring-yellow-400" },
-  { id: "gamepad", icon: Gamepad2, label: "Screen Time", color: "text-indigo-500", bg: "bg-indigo-100", hover: "hover:ring-indigo-400" },
-  { id: "coins", icon: Coins, label: "Allowance", color: "text-emerald-500", bg: "bg-emerald-100", hover: "hover:ring-emerald-400" },
-  { id: "gift", icon: Gift, label: "Toy", color: "text-pink-500", bg: "bg-pink-100", hover: "hover:ring-pink-400" },
-  { id: "ticket", icon: Ticket, label: "Outing", color: "text-orange-500", bg: "bg-orange-100", hover: "hover:ring-orange-400" },
-  { id: "icecream", icon: IceCream, label: "Treat", color: "text-cyan-500", bg: "bg-cyan-100", hover: "hover:ring-cyan-400" },
+  { id: "trophy", icon: FigmaTrophyIcon, label: "Prize", color: "text-[#F0B100]", bg: "bg-[#fef9c2]", buttonBg: "bg-[#d4920a]", hover: "hover:ring-yellow-400" },
+  { id: "gamepad", icon: Gamepad2, label: "Screen Time", color: "text-indigo-500", bg: "bg-indigo-100", buttonBg: "bg-indigo-500", hover: "hover:ring-indigo-400" },
+  { id: "coins", icon: Coins, label: "Allowance", color: "text-emerald-500", bg: "bg-emerald-100", buttonBg: "bg-emerald-500", hover: "hover:ring-emerald-400" },
+  { id: "gift", icon: Gift, label: "Toy", color: "text-pink-500", bg: "bg-pink-100", buttonBg: "bg-pink-500", hover: "hover:ring-pink-400" },
+  { id: "ticket", icon: Ticket, label: "Outing", color: "text-orange-500", bg: "bg-orange-100", buttonBg: "bg-orange-500", hover: "hover:ring-orange-400" },
+  { id: "icecream", icon: IceCream, label: "Treat", color: "text-cyan-500", bg: "bg-cyan-100", buttonBg: "bg-cyan-500", hover: "hover:ring-cyan-400" },
 ] as const;
 
 export const DEFAULT_GOOD_ACTIONS: Action[] = [

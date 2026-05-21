@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { X, Check, UserPlus } from "lucide-react";
+import { usePostHog } from "@posthog/react";
 import type { ChildProfile } from "../types";
 
 export function ChildSelectorModal({
@@ -16,14 +17,30 @@ export function ChildSelectorModal({
   onAdd: (name: string) => void;
   onClose: () => void;
 }) {
+  const posthog = usePostHog();
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
 
   const handleAddSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (newName.trim()) {
+      posthog?.capture("child_profile_added", {
+        child_name: newName.trim(),
+        total_profiles: childrenList.length + 1,
+      });
       onAdd(newName.trim());
     }
+  };
+
+  const handleSelect = (id: string) => {
+    if (id !== activeChildId) {
+      const selected = childrenList.find((c) => c.id === id);
+      posthog?.capture("child_profile_switched", {
+        to_child_id: id,
+        to_child_name: selected?.name,
+      });
+    }
+    onSelect(id);
   };
 
   return (
@@ -40,7 +57,7 @@ export function ChildSelectorModal({
           {childrenList.map((c) => (
             <button
               key={c.id}
-              onClick={() => onSelect(c.id)}
+              onClick={() => handleSelect(c.id)}
               className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all ${
                 c.id === activeChildId
                   ? "bg-blue-500 text-white shadow-md scale-[1.02]"
