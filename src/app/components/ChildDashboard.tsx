@@ -325,7 +325,7 @@ export function ChildDashboard({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 shrink-0 pb-4 pt-2 mt-auto w-full max-w-[400px] mx-auto z-10">
+        <div className="flex gap-4 shrink-0 pb-1 pt-2 mt-auto w-full max-w-[400px] mx-auto z-10">
           <button
             onClick={() => setActiveModal("deduct")}
             className="flex-1 h-[60px] bg-[#ffe4e6] rounded-[24px] relative overflow-hidden flex items-center justify-center group active:scale-95 transition-transform"
@@ -347,6 +347,10 @@ export function ChildDashboard({
             </div>
           </button>
         </div>
+
+        <p className="text-center text-[11px] text-[#90a1b9] pb-3 shrink-0">
+          Built by <a href="mailto:madelkoh@hotmail.com" className="underline hover:text-[#62748e] transition-colors">Madeleine Koh</a>
+        </p>
 
         {/* Modals */}
         <AnimatePresence>
